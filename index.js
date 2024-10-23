@@ -8,8 +8,14 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const paymentRoutes=require('./routes/paymentRoutes')
 const cors = require('cors');
 const app = express();
-app.use(cors())
-app.use(express.json());
+const corsOptions = {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+    credentials: true,
+  };
+  app.use(cors(corsOptions));
+  app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 connectDB();
 
