@@ -1,0 +1,68 @@
+name: Node.js CI/CD Pipeline
+
+# Trigger the workflow on push or pull request to the main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Define the jobs that will run in the workflow
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16' # Specify the Node.js version you are using
+
+    # Install dependencies
+    - name: Install dependencies
+      run: npm install
+
+    # Run the linter
+    - name: Run Lint
+      run: npm run lint
+
+    # Run unit tests
+    - name: Run Unit Tests
+      run: npm test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    # Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    # Install dependencies
+    - name: Install dependencies
+      run: npm install
+
+    # Deploy to the staging environment
+    - name: Deploy to Staging
+      run: |
+        ssh user@your-staging-server-ip "cd /path/to/your/project && git pull && npm install && pm2 restart app"
+
+    # If using Docker:
+    # - name: Deploy with Docker
+    #   run: |
+    #     ssh user@your-staging-server-ip "cd /path/to/your/docker-compose-directory && docker-compose down && docker-compose up -d"
